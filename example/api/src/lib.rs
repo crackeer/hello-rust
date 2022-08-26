@@ -1,7 +1,6 @@
 
 use serde::{Deserialize, Serialize};
 use std::fs::File;
-use std::error::Error;
 use std::io::Read;
 
 #[derive(Serialize, Deserialize)]
@@ -32,7 +31,9 @@ pub fn read_config(path : String) -> Option<Box<APIConfig>> {
     let mut content = String::from("");
     if result.is_ok() {
         let mut file = result.unwrap();
-        file.read_to_string(&mut content);
+        if  file.read_to_string(&mut content).is_err() {
+           return None
+        }
 
         let decoded: APIConfig = toml::from_str(&content).unwrap();
         println!("connent is {}", content);
