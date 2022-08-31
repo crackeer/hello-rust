@@ -1,3 +1,4 @@
+mod file;
 use axum::{
     routing::{get, post},
     http::StatusCode,
@@ -10,6 +11,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use tracing_subscriber;
+use file::file::get_md_list;
 
 #[tokio::main]
 async fn main() {
@@ -75,11 +77,10 @@ async fn proxy(Query(params): Query<HashMap<String, String>>) -> impl IntoRespon
 async fn md_list(Query(params): Query<HashMap<String, String>>) -> impl IntoResponse {
     let path = params.get("dir");
     if path.is_some() {
-        let data = api::get_md_list(path.unwrap().to_string());
+        let data = get_md_list(path.unwrap().to_string());
         if data.is_ok() {
             return (StatusCode::CREATED, Json(data.unwrap()));
         }
-        
     }
     (StatusCode::CREATED, Json(vec![]))
 }
