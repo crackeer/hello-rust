@@ -5,6 +5,7 @@ use axum::{
     Json, Router,
     extract::{Path, Query},
 };
+use std::io::{Error,ErrorKind};
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
@@ -75,12 +76,12 @@ async fn md_list(Query(params): Query<HashMap<String, String>>) -> impl IntoResp
     let path = params.get("dir");
     if path.is_some() {
         let data = api::get_md_list(path.unwrap().to_string());
-            //println!("Some Data:{}", data);
-        (StatusCode::CREATED, Json(data))
-    } else {
-        (StatusCode::CREATED, Json(vec![]))
+        if data.is_ok() {
+            return (StatusCode::CREATED, Json(data.unwrap()));
+        }
+        
     }
-    
+    (StatusCode::CREATED, Json(vec![]))
 }
 
 

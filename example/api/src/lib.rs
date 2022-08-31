@@ -2,6 +2,8 @@
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Read;
+use std::io::Error;
+
 
 use std::{
     fs::metadata,
@@ -49,11 +51,17 @@ pub fn read_config(path : String) -> Option<Box<APIConfig>> {
     }
 }
 
-pub fn get_md_list(dir: String) -> Vec<String> {
+pub fn get_md_list(dir: String) -> Result<Vec<String>, Error>  {
+
+    let data = read_dir(dir.clone().to_string());
+    if data.is_err() {
+        return Err(data.err().unwrap())
+    }
+
     let mut dir_vec: Vec<String> = Vec::new();
     let mut list: Vec<String> = Vec::new();
-    println!("{}", dir);
-    dir_vec.push(dir);
+    dir_vec.push(dir.clone().to_string());
+
    
     let mut cur_index: usize = 0;
     while cur_index < dir_vec.len() {
@@ -77,6 +85,6 @@ pub fn get_md_list(dir: String) -> Vec<String> {
         cur_index = cur_index + 1;
     }
     println!("{}", list.join(","));
-    list
+    Ok(list)
 }
 
