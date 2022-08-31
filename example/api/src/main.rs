@@ -5,6 +5,7 @@ use axum::{
     response::IntoResponse,
     Json, Router,
     extract::{Path, Query},
+    http::request::Parts,
 };
 use std::io::{Error,ErrorKind};
 use std::collections::HashMap;
@@ -12,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use tracing_subscriber;
 use file::file::get_md_list;
+use reqwest;
 
 #[tokio::main]
 async fn main() {
@@ -25,7 +27,8 @@ async fn main() {
         // `POST /users` goes to `create_user`
         .route("/users", post(create_user))
         .route("/proxy", get(proxy))
-        .route("/files", get(md_list));
+        .route("/files", get(md_list))
+        .route("/http", get(http_request));
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
@@ -83,6 +86,21 @@ async fn md_list(Query(params): Query<HashMap<String, String>>) -> impl IntoResp
         }
     }
     (StatusCode::CREATED, Json(vec![]))
+}
+
+async fn http_request(Query(params): Query<HashMap<String, String>>) -> impl IntoResponse {
+    let resp = reqwest::get("https://httpbin.org/ip").await;
+
+    let mut test = HashMap::new();
+    test.insert(String::from("test"), String::from("test"));
+
+    if resp.is_err() {
+        return  (StatusCode::CREATED, Json(test))
+    }
+
+    let text = resp.unwrap().json::<HashMap<String, String>>().await;
+        
+    (StatusCode::CREATED, Json(text.unwrap()))
 }
 
 
