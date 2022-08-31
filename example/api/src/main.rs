@@ -21,7 +21,8 @@ async fn main() {
         .route("/", get(root))
         // `POST /users` goes to `create_user`
         .route("/users", post(create_user))
-        .route("/proxy", get(proxy));
+        .route("/proxy", get(proxy))
+        .route("/files", get(md_list));
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
@@ -70,10 +71,22 @@ async fn proxy(Query(params): Query<HashMap<String, String>>) -> impl IntoRespon
     
 }
 
+async fn md_list(Query(params): Query<HashMap<String, String>>) -> impl IntoResponse {
+    let path = params.get("dir");
+    if path.is_some() {
+        let data = api::get_md_list(path.unwrap().to_string());
+            //println!("Some Data:{}", data);
+        (StatusCode::CREATED, Json(data))
+    } else {
+        (StatusCode::CREATED, Json(vec![]))
+    }
+    
+}
+
 
 // the input to our `create_user` handler
 // the input to our `create_user` handler
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct CreateUser {
     username: String,
 }
