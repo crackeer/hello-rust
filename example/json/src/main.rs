@@ -1,7 +1,12 @@
-use serde_json::{Result, Value};
+use serde_json::{Value};
 use serde::{Deserialize, Serialize};
+use std::io::{Error, Read};
+use std::fs::File;
 
 fn main() {
+
+    read();
+    /* 
     let data = r#"
         {
             "host": "John Doe",
@@ -17,20 +22,30 @@ fn main() {
     } else {
         println!("{}", result.err().unwrap())
     }
+    */
 
-    /*
-      let method = match(result){
-        Ok(data) => data,
-        Err(err) => println!("{}", err)
+}
+
+pub fn read() -> Result<(), Error>{
+
+    let file = File::open("./sample.json");
+    let mut file = match file {
+        Err(err) => {
+            return Err(err);
+        }
+        Ok(f) => f
     };
-     */
 
-  
+    let mut content = String::from("");
+    file.read_to_string(&mut content);
+
+    let data : Value = serde_json::from_str(&content).unwrap();
+    println!("{}{}", data, data.is_object());
     
-
-    // Parse the string of data into serde_json::Value.
-    //serde_json::from_str(data);
-
+    let obj = data.as_object();
+    
+    
+    Ok(())
 }
 
 #[derive(Serialize, Deserialize, Debug)]
