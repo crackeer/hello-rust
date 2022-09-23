@@ -1,5 +1,6 @@
 use serde_json::{Value, json};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::io::{Error, Read};
 use std::fs::File;
 
@@ -55,21 +56,34 @@ pub fn read() -> Result<(), Error>{
 }
 
 
-fn cat_cat(value : Value) -> Value {
+fn get_real_value(input : Value, schema : String) -> Option<Value> {
+    None 
+}
+
+
+fn cat_cat(value : &Value, input : Value) ->  Option<Value> {
 
     if value.is_string() {
-        return value
+        return get_real_value(input, value.to_string());
     }
-    let mut ret : Value = json!({})
-    if value.is_object() {
-        if let Some(obj) = value.as_object() {
-            for (key, val) in obj.into_iter(){
-                if val.is_string() {
-                    ret.
-                }
+    
+   
+    if !value.is_object() {
+        return Some(*value)
+    }
+
+    
+    let mut ret : Value = json!({});
+        
+    if let Some(obj) = value.as_object() {
+        for (key, val) in obj.into_iter() {
+            if let Some(tmp) = cat_cat(val, input) {
+                ret.as_object().unwrap().insert(String::from(key), tmp);
             }
         }
     }
+
+    Some(ret)
 
    
 }
