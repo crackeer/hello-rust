@@ -1,4 +1,4 @@
-use serde_json::{Value};
+use serde_json::{Value, json};
 use serde::{Deserialize, Serialize};
 use std::io::{Error, Read};
 use std::fs::File;
@@ -45,10 +45,33 @@ pub fn read() -> Result<(), Error>{
     if let Some(obj) = data.as_object() {
         for (key, val) in obj.into_iter(){
             println!("{}{}", key, val)
+            if val.is_string()  {
+
+            }
         }
     }
     
     Ok(())
+}
+
+
+fn cat_cat(value : Value) -> Value {
+
+    if value.is_string() {
+        return value
+    }
+    let mut ret : Value = json!({})
+    if value.is_object() {
+        if let Some(obj) = value.as_object() {
+            for (key, val) in obj.into_iter(){
+                if val.is_string() {
+                    ret.
+                }
+            }
+        }
+    }
+
+   
 }
 
 #[derive(Serialize, Deserialize, Debug)]
