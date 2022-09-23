@@ -42,8 +42,11 @@ pub fn read() -> Result<(), Error>{
     let data : Value = serde_json::from_str(&content).unwrap();
     println!("{}{}", data, data.is_object());
     
-    let obj = data.as_object();
-    
+    if let Some(obj) = data.as_object() {
+        for (key, val) in obj.into_iter(){
+            println!("{}{}", key, val)
+        }
+    }
     
     Ok(())
 }
