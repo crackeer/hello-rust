@@ -1,0 +1,11 @@
+{
+    "simple" : {
+        "cat" : 5343,
+        "fly" : "abc"
+    },
+    "like" : [
+        {
+            "abc" : "sss"
+        }
+    ]
+}
