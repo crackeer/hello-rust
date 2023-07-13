@@ -1,7 +1,12 @@
-use html_parser::Dom;
-
-static HTML_STRING: &str = include_str!("./index.html");
+use scraper::{Html, Selector};
+static HTML_STRING: &str = include_str!("./open.html");
 
 fn main() {
-    assert!(Dom::parse(HTML_STRING).is_ok());
+    let document = Html::parse_document(HTML_STRING);
+    let script_selector = Selector::parse("script").unwrap();
+
+    for script in document.select(&script_selector) {
+        let script_content = script.inner_html();
+        println!("JavaScript code: {}", script_content);
+    }
 }
