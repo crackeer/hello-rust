@@ -26,7 +26,7 @@ fn main() {
 }
 
 pub fn read_and_exec() -> Result<(), Error> {
-    let file = File::open("./sample.json");
+    let file = File::open("examples/json/sample.json");
     let mut file = match file {
         Err(err) => {
             return Err(err);
