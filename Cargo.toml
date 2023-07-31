@@ -16,6 +16,9 @@ scraper = "0.12.0"
 async-ssh2-tokio = "0.7.0"
 ssh2 = "0.9"
 
+[build-dependencies]
+cc = "1.0"
+
 [[example]]
 name = "json-parse"
 path = "examples/json/parse.rs"
@@ -31,3 +34,8 @@ path = "examples/ssh/execute.rs"
 [[example]]
 name = "ssh-execute1"
 path = "examples/ssh/execute1.rs"
+
+[[example]]
+name = "clib-slm"
+path = "examples/clib/slm.rs"
+build = "examples/clib/build.rs"
