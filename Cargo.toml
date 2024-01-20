@@ -42,3 +42,7 @@ path = "examples/clib/slm.rs"
 [[example]]
 name = "buildx"
 path = "examples/buildx/main.rs"
+
+[[example]]
+name = "usb"
+path = "examples/usb/main.rs"
