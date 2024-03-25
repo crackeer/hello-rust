@@ -15,6 +15,7 @@ html_parser="0.7.0"
 scraper = "0.12.0"
 async-ssh2-tokio = "0.7.0"
 ssh2 = "0.9"
+bollard = "*"
 
 [build-dependencies]
 cc = "1.0"
@@ -46,3 +47,7 @@ path = "examples/buildx/main.rs"
 [[example]]
 name = "usb"
 path = "examples/usb/main.rs"
+
+[[docker]]
+name = "docker"
+path = "examples/docker/pmainrse.rs"
