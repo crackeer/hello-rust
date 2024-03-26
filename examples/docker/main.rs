@@ -2,26 +2,42 @@ use bollard::errors::Error;
 use bollard::image::ListImagesOptions;
 use bollard::Docker;
 use bollard::API_DEFAULT_VERSION;
+use futures::stream::StreamExt;
 use serde_json::json;
+use std::collections::HashMap;
 use std::default::Default;
 use std::env;
-use std::path::Path;
-
+use std::fs;
+use std::fs::File;
+use std::io::Write;
+use std::path::PathBuf;
 
 #[tokio::main]
 async fn main() {
+    list_docker_images().await;
+    save_docker_images().await;
+}
+
+async fn list_docker_images() {
     match get_docker() {
         Err(err) => {
-            println!("{}", err)
+            println!("{}", err.to_string())
         }
-        Ok(ref docker) => {
+        Ok(docker) => {
             println!("{}", String::from("OK"));
-            match docker.list_images(Some(ListImagesOptions::<String> {
+
+            match docker
+                .list_images(Some(ListImagesOptions::<String> {
                     all: true,
-                    ..Default::default()
-                })).await {
+                    filters: HashMap::new(),
+                    digests: true,
+                }))
+                .await
+            {
                 Ok(list) => {
-                    println!("{}", list.len())
+                    for item in list.iter() {
+                        println!("{}", serde_json::json!(item));
+                    }
                 }
                 Err(err) => {
                     println!("{}", err)
@@ -31,32 +47,40 @@ async fn main() {
     }
 }
 
-fn get_docker() -> Result<Docker, String> {
-    /* 
-    if let Ok(docker) = Docker::connect_with_local_defaults() {
-        println!("connect_with_local_defaults");
-        return Ok(docker);
-    }*/
-
-    match get_user_docker_sock() {
-        Ok(dir) => {
-            let user_path = Path::new(&dir).join(&".docker/run/docker.sock");
-            println!("{}", user_path.to_str().unwrap());
-            if let Ok(docker) =
-                Docker::connect_with_socket(user_path.to_str().unwrap(), 120, API_DEFAULT_VERSION)
-            {
-               
-                return Ok(docker);
-            }
-            return Err(String::from("Sim"));
+async fn save_docker_images() {
+    match get_docker() {
+        Err(err) => {
+            println!("{}", err.to_string())
         }
-        Err(err) => Err(err),
+        Ok(docker) => {
+            println!("{}", String::from("OK"));
+            let mut tmp_file = File::create(&"/tmp/realsee-shepherd-images.tar").unwrap();
+            let mut stream = docker.export_image(&"realsee-shepherd-svc:local");
+            while let Some(item) = stream.next().await {
+                if let Ok(data) = item {
+                    _ = tmp_file.write_all(&data);
+                }
+            }
+        }
     }
 }
 
-fn get_user_docker_sock() -> Result<String, String> {
+fn get_docker() -> Result<Docker, Error> {
+    if let Some(sock_path) = get_user_docker_sock_path() {
+        return Docker::connect_with_socket(sock_path.to_str().unwrap(), 120, API_DEFAULT_VERSION);
+    }
+    Docker::connect_with_local_defaults()
+}
+
+fn get_user_docker_sock_path() -> Option<PathBuf> {
     match env::home_dir() {
-        Some(path) => Ok(path.to_str().unwrap().to_string()),
-        None => Err(String::from("no home directory")),
+        Some(path) => {
+            let tmp_path = path.join(&".docker/run/docker.sock");
+            if fs::metadata(tmp_path.as_path()).is_ok() {
+                return Some(tmp_path);
+            }
+            None
+        }
+        None => None,
     }
 }
