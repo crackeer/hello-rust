@@ -18,7 +18,7 @@ ssh2 = "0.9"
 bollard = "0.16.1"
 bytes = "1.6.0"
 futures = "*"
-quick-js = "0.4.1"
+quickjs_runtime = { version = "0.15", features = ["console", "setimmediate", "setinterval", "settimeout", "typescript", "quickjs-ng"], default-features = false }
 
 [build-dependencies]
 cc = "1.0"

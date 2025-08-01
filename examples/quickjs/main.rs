@@ -1,29 +1,20 @@
-use quick_js::{Context, JsValue};
+use quickjs_runtime::builder::QuickJsRuntimeBuilder;
+use quickjs_runtime::facades::QuickJsRuntimeFacade;
+use quickjs_runtime::jsutils::Script;
+use quickjs_runtime::values::JsValueFacade;
+#[tokio::main]
+async fn main() {
+    let context = QuickJsRuntimeBuilder::new().build();
+    let result = context.eval_sync(None, Script::new("file://main.js", "[1,2,3,4]")).unwrap();
+    println!("{:?}", result);
 
-fn main() {
-    // 创建 JS 上下文
-    let context = Context::new().unwrap();
-
-    // 执行一段 JS 表达式
-    let value = context.eval("1 + 2").unwrap();
-    assert_eq!(value, JsValue::Int(3));
-
-    // 执行一段 JS 代码并返回字符串
-    let value = context
-        .eval_as::<String>("var x = 100 + 250; x.toString()")
-        .unwrap();
-    assert_eq!(&value, "350");
-
-    // 注册 Rust 函数到 JS 中
-    context.add_callback("add", |a: i32, b: i32| a + b).unwrap();
-
-    // 在 JS 中调用 Rust 函数
-    context
-        .eval(
-            r#"
-            const result = add(10, 20);
-            console.log("Result from Rust:", result);
-        "#,
-        )
-        .unwrap();
+    match result {
+         JsValueFacade::Array { val: arr } => {
+            println!("{:?}", arr);
+        }
+        JsValueFacade::JsArray { cached_array: str } => {
+            println!("{:?}", str.get_array().await.unwrap());
+        }
+        _ => {}
+    };
 }
