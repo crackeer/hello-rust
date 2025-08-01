@@ -1,6 +1,7 @@
 
 fn main() {
     println!("hello, build.rs");
+    /* 
     println!(
         "cargo:rerun-if-changed=build.rs",
     );
@@ -10,4 +11,5 @@ fn main() {
         &"/usr/local/share/senseshield/sdk/C/lib64"
     );
     println!("cargo:rustc-link-lib=static={}", library_name);
+    */
 }

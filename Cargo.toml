@@ -18,6 +18,7 @@ ssh2 = "0.9"
 bollard = "0.16.1"
 bytes = "1.6.0"
 futures = "*"
+quick-js = "0.4.1"
 
 [build-dependencies]
 cc = "1.0"
@@ -38,9 +39,6 @@ path = "examples/ssh/execute.rs"
 name = "ssh-execute1"
 path = "examples/ssh/execute1.rs"
 
-[[example]]
-name = "clib-slm"
-path = "examples/clib/slm.rs"
 
 [[example]]
 name = "buildx"
@@ -50,6 +48,12 @@ path = "examples/buildx/main.rs"
 name = "usb"
 path = "examples/usb/main.rs"
 
-[[docker]]
+[[example]]
 name = "docker"
 path = "examples/docker/pmainrse.rs"
+
+[[example]]
+name = "quickjs"
+path = "examples/quickjs/main.rs"
+
+
