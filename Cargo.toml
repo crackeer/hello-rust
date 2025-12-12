@@ -19,6 +19,7 @@ bollard = "0.16.1"
 bytes = "1.6.0"
 futures = "*"
 quickjs_runtime = { version = "0.15", features = ["console", "setimmediate", "setinterval", "settimeout", "typescript", "quickjs-ng"], default-features = false }
+ctrlc = "3.4.0"
 
 [build-dependencies]
 cc = "1.0"
@@ -55,5 +56,17 @@ path = "examples/docker/pmainrse.rs"
 [[example]]
 name = "quickjs"
 path = "examples/quickjs/main.rs"
+
+[[example]]
+name = "ssh-realtime-output"
+path = "examples/ssh/realtime_output.rs"
+
+[[example]]
+name = "ssh-interruptible-command"
+path = "examples/ssh/interruptible_command.rs"
+
+[[example]]
+name = "ssh-signal-example"
+path = "examples/ssh/ssh_signal_example.rs"
 
 
